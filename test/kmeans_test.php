@@ -30,7 +30,7 @@ $clusters = array(
     'bright.com/job' => new Cluster('bright.com/job', $dimensions, $mean2),
     'linkedin.com/company' => new Cluster('linkedin.com/company', $dimensions, $mean3),
 );
-$new_point = array('name' => 'linkedin.com/job/2?x=1&y=2', 'values' => array('linkedin.com' => 100, 'bright.com' => 0, 'job' => 10, 'company' => 0, 'x' => 1, 'y' => 1));
+$new_point = array('name' => 'linkedin.com/job/2?x=1&y=2', 'values' => array('linkedin.com' => 80, 'bright.com' => 10, 'job' => 10, 'company' => 0, 'x' => 1, 'y' => 1));
 $kmeans = new KMeans($dimensions, $clusters, array($new_point));
 solve($kmeans);
 

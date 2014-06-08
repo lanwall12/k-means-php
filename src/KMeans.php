@@ -21,15 +21,16 @@ class KMeans {
      * @param   array   $dimensions     The list of dimensions (keys for data points, can be strings or Dimension objects)
      * @param   mixed   $clusters       The number of clusters to create or an array of preexisting clusters
      * @param   array   $data           The data points
+     * @param   string  $init_method    Which initialization method to perform ('random'|'partition')
      */
-    public function __construct(array $dimensions=null, $clusters=null, array $data=null) {
+    public function __construct(array $dimensions=null, $clusters=null, array $data=null, $init_method=null) {
         $this->set_dimensions($dimensions);
         if (is_array($clusters)) {
             $this->set_clusters($clusters);
-            $this->init_method = 'partition';
+            $this->init_method = false;
         } else {
             $this->set_k($clusters);
-            $this->init_method = 'random';
+            $this->init_method = $init_method ? $init_method : 'random';
         }
         $this->set_data($data);
     }
@@ -135,13 +136,20 @@ class KMeans {
         // make sure all the vars are set
         if (empty($this->clusters) || empty($this->dimensions) || empty($this->data))
             return $this->initialized = false;
-        if ($this->init_method == 'random' && count($this->data) >= count($this->clusters)) {
+        if ($this->init_method === 'random' && count($this->data) >= count($this->clusters)) {
             // pick k random data points, use them as the means
             $i = 0;
             foreach (array_rand($this->data, count($this->clusters)) as $index) {
                 if (!$this->clusters[$i]->set_mean(clone $this->data[$index]))
                     return $this->initialized = false;
                 $i++;
+            }
+            return $this->initialized = true;
+        } elseif ($this->init_method === false) {
+            // the clusters are already set, don't change them
+            foreach ($this->clusters as $cluster) {
+                if (!$cluster->mean)
+                    return $this->initialized = false;
             }
             return $this->initialized = true;
         } else {
