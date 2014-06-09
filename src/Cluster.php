@@ -18,7 +18,7 @@ class Cluster {
      * @param   array   $dimensions An array of dimension names (or Dimension objects)
      * @param   mixed   $mean       An initial mean for this cluster (DataPoint | array of string (dimension) => float)
      */
-    public function __construct($name, array $dimensions=array(), $mean=array()) {
+    public function __construct($name, array $dimensions=array(), array $mean=array()) {
         $this->set_name($name);
         $this->set_dimensions($dimensions);
         if (!empty($mean)) {

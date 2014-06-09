@@ -23,7 +23,7 @@ class KMeans {
      * @param   array   $data           The data points
      * @param   string  $init_method    Which initialization method to perform ('random'|'partition')
      */
-    public function __construct(array $dimensions=null, $clusters=null, array $data=null, $init_method=null) {
+    public function __construct(array $dimensions=array(), $clusters=null, array $data=array(), $init_method=null) {
         $this->set_dimensions($dimensions);
         if (is_array($clusters)) {
             $this->set_clusters($clusters);
@@ -148,7 +148,7 @@ class KMeans {
         } elseif ($this->init_method === false) {
             // the clusters are already set, don't change them
             foreach ($this->clusters as $cluster) {
-                if (!$cluster->mean)
+                if (!$cluster->mean instanceof DataPoint)
                     return $this->initialized = false;
             }
             return $this->initialized = true;
