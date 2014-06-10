@@ -9,6 +9,7 @@ class Cluster {
     private $name;
     private $dimensions = array();
     private $mean;
+    private $variance;
     private $data = array();
     private $converged = false;
 
@@ -48,6 +49,11 @@ class Cluster {
         if (!empty($this->mean)) {
             $str .= "\n  mean: ";
             foreach ($this->mean->values as $dim => $val)
+                $str .= $dim.' = '.$val.', ';
+        }
+        if (!empty($this->variance)) {
+            $str .= "\n  variance: ";
+            foreach ($this->variance->values as $dim => $val)
                 $str .= $dim.' = '.$val.', ';
         }
         return $str."\n";
@@ -137,9 +143,31 @@ class Cluster {
             $new_mean[$dim->name] = $dim_mean;
         }
         // if we haven't converged, update the mean
-        if (!$converged)
+        if (!$converged) {
             $this->mean = new DataPoint($new_mean, "Cluster {$this->name} mean");
+            $this->update_variance();
+        } elseif (empty($this->variance)) {
+            $this->update_variance();
+        }
         $this->converged = $converged;
         return true;
+    }
+
+    /**
+     * Calculate the variance for this cluster
+     */
+    private function update_variance() {
+        if (count($this->data) < 2) {
+            $this->variance = null;
+            return;
+        }
+        $new_variance = array();
+        // get the variance for each dimension
+        foreach ($this->dimensions as $dim) {
+            $mean_val = $this->get_dimension($dim);
+            $dim_variance = array_sum(array_map(function($p) use ($dim, $mean_val) { return pow($p->get_dimension($dim) - $mean_val, 2); }, $this->data))/(count($this->data)-1);
+            $new_variance[$dim->name] = $dim_variance;
+        }
+        $this->variance = new DataPoint($new_variance, "Cluster {$this->name} variance");
     }
 }
